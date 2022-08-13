@@ -1,20 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Architects Daughter', cursive;
+    font-family: 'Roboto', sans-serif;
     --cell-size: 100px;
     --mark-size: calc(var(--cell-size) * .9);
     background-color: rgb(245, 245, 245);
 
 }
 
+body {
+    display: flex;
+    justify-content: center;
+}
+
 main {
     display: flex;
-    width: 100%;
+    flex-direction: column;
+    width: 33%;
     height: 100vh;
     justify-content: center;
     align-items: center;
+}
+
+.information {
+    height: 50px;
 }
 
 .game__container {
@@ -75,6 +87,32 @@ main {
     transform: rotate(-45deg);
 }
 
+
+
+.button__restart {
+    background-color: rgb(114, 166, 209);
+    font-size: 2em;
+    margin-top: 20px;
+    padding: 1em;
+    width: 464px;
+    height: 100px;
+  
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    color: white;
+    border: none;
+    border-radius: 0.25em;
+    cursor: pointer;
+  
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
 
 @media only screen and (min-width: 560px) {
     .modal {
