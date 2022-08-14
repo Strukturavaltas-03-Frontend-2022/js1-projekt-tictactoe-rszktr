@@ -5,8 +5,8 @@ let currentPlayer = 'cross'
 let crossMarks = []
 let circleMarks = []
 
-let infoPanel = document.querySelector('.information');
-let logThis = () => { console.log(this) };
+const infoPanel = document.querySelector('.information');
+const startingInfo = () => infoPanel.innerHTML = "Az X játékos kezd.";
 
 // 2. Aktuális jel elhelyezése cellában - kattintásra cella class módosítása, de csak egyszer
 (addListener = () => {
@@ -14,7 +14,20 @@ let logThis = () => { console.log(this) };
         item.addEventListener('click', placeMarker, { once: true }));
 })();
 
-// 3. Van-e győztes? - győztes események meghatározása, aktuális táblában van-e olyan ami valamelyikkel egyezik?
+// 3. Lépés utáni teendők: Van-e győztes? Forduló léptetése.
+
+let checker = () => {
+    if (fullBoard() && !isThereAWinner()) {
+        infoPanel.innerHTML = "Döntetlen.";
+    } else if (isThereAWinner()) {
+        announceWinner();
+        resetListener();
+    } else {
+        switchPlayers();
+        whoseTurnIsIt();
+    }
+};
+
 let winConditions = [
     [1, 2, 3],
     [4, 5, 6],
@@ -26,32 +39,37 @@ let winConditions = [
     [3, 5, 7],
 ];
 
-let checker = () => {
-    if (fullBoard()) {
-        infoPanel.innerHTML = "Döntetlen.";
-    } else {
-        winConditions.forEach(combination => {
-            if (combination.every(n => marksForChecking(n))) {
-                if (currentPlayer == 'cross') {
-                    infoPanel.innerHTML = "Az X nyert."
-                } else {
-                    infoPanel.innerHTML = "A O nyert." ;
-                }
-                resetListener();
-            }
-        })
+const fullBoard = () => {
+    if ((crossMarks.length + circleMarks.length) == 9) {
+        return true
     }
 };
 
-// Melyik játékos jeleit kell vizsgálni?
+const isThereAWinner = () =>
+    winConditions.some(combination =>
+        combination.every(n => marksForChecking(n)));
+
+const announceWinner = () => {
+    if (currentPlayer == 'cross') {
+        infoPanel.innerHTML = "Az X nyert."
+    } else {
+        infoPanel.innerHTML = "A O nyert.";
+    }
+};
+
 const marksForChecking = (n) => (currentPlayer == 'cross')
     ? crossMarks.includes(n)
     : circleMarks.includes(n);
 
-// Döntetlen? - minden cella tele és nincs győztes
-const fullBoard = () => {
-    if ((crossMarks.length + circleMarks.length) == 9) {
-        return true
+const switchPlayers = () => (currentPlayer == 'cross')
+    ? currentPlayer = 'circle'
+    : currentPlayer = 'cross';
+
+const whoseTurnIsIt = () => {
+    if (currentPlayer == 'cross') {
+        infoPanel.innerHTML = "Az X játékos lépése jön."
+    } else {
+        infoPanel.innerHTML = "A O játékos lépése jön.";
     }
 };
 
@@ -64,38 +82,32 @@ function placeMarker() {
         circleMarks.push(parseInt(this.getAttribute('id')));
     }
     checker();
-    switchPlayers();
 };
 
-// Játékosok közötti váltás
-const switchPlayers = () => (currentPlayer == 'cross')
-    ? currentPlayer = 'circle'
-    : currentPlayer = 'cross';
-
-// 6. Végeredmény kiírása (modalban?) -
-
-
-
-
 // Játék vége, tábla törlése
-const clearBoard = () => {
-    cells.forEach(item =>
-        item.classList.remove('cross', 'circle'));
-        crossMarks = [];
-        circleMarks = [];
-    infoPanel.innerHTML = '';
+
+const resetGame = () => {
+    clearBoard();
+    clearMarkCollectors();
     resetListener();
     addListener();
+    startingInfo();
     currentPlayer = 'cross';
 }
+
+const clearBoard = () => {
+    cells.forEach(item =>
+        item.classList.remove('cross', 'circle'))
+}
+
+const clearMarkCollectors = () => { crossMarks = []; circleMarks = [] };
 
 const resetListener = () => {
     cells.forEach(item => item.removeEventListener('click', placeMarker))
 }
 
 const button = document.getElementsByClassName('button__restart')[0];
-button.addEventListener('click', clearBoard);
-
+button.addEventListener('click', resetGame);
 
 
 /* ----------------------------------------------------------------------------
