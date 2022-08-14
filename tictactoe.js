@@ -1,6 +1,6 @@
 const cells = document.querySelectorAll('.cell');
 
-// 1. Kezdőjátékos megadása, aktuális jel
+// Kezdőjátékos megadása, aktuális jel
 let currentPlayer = 'cross'
 let crossMarks = []
 let circleMarks = []
@@ -8,14 +8,24 @@ let circleMarks = []
 const infoPanel = document.querySelector('.information');
 const startingInfo = () => infoPanel.innerHTML = "Az X játékos kezd.";
 
-// 2. Aktuális jel elhelyezése cellában - kattintásra cella class módosítása, de csak egyszer
+// Aktuális jel elhelyezése cellában - kattintásra cella class módosítása, de csak egyszer
 (addListener = () => {
     cells.forEach(item =>
         item.addEventListener('click', placeMarker, { once: true }));
 })();
 
-// 3. Lépés utáni teendők: Van-e győztes? Forduló léptetése.
+// Egy lépés
+function placeMarker() {
+    this.classList.add(currentPlayer);
+    if (currentPlayer == 'cross') {
+        crossMarks.push(parseInt(this.getAttribute('id')));
+    } else {
+        circleMarks.push(parseInt(this.getAttribute('id')));
+    }
+    checker();
+};
 
+// Lépés utáni teendők: Van-e győztes? Forduló léptetése.
 let checker = () => {
     if (fullBoard() && !isThereAWinner()) {
         infoPanel.innerHTML = "Döntetlen.";
@@ -73,19 +83,7 @@ const whoseTurnIsIt = () => {
     }
 };
 
-// Egy forduló
-function placeMarker() {
-    this.classList.add(currentPlayer);
-    if (currentPlayer == 'cross') {
-        crossMarks.push(parseInt(this.getAttribute('id')));
-    } else {
-        circleMarks.push(parseInt(this.getAttribute('id')));
-    }
-    checker();
-};
-
-// Játék vége, tábla törlése
-
+// Játék vége, tábla törlése, tömbök nullázása
 const resetGame = () => {
     clearBoard();
     clearMarkCollectors();
@@ -106,6 +104,7 @@ const resetListener = () => {
     cells.forEach(item => item.removeEventListener('click', placeMarker))
 }
 
+// Játék vége gombhoz rendelése
 const button = document.getElementsByClassName('button__restart')[0];
 button.addEventListener('click', resetGame);
 
